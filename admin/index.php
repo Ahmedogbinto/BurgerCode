@@ -24,7 +24,7 @@
         <h1 class="text-logo"><span class="glyphicon glyphicon-cutlery"></span> Burger Code <span class="glyphicon glyphicon-cutlery"></span></h1>
         <div class="container admin">
             <div class="row">
-                <h1><strong>Liste des items     </strong><a class="btn btn-success" href="insert.php" role="button"><span class="glyphicon glyphicon-plus"> Ajouter</span></a></h1>
+                <h1><strong>Liste des items   </strong><a class="btn btn-success" href="insert.php" role="button"><span class="glyphicon glyphicon-plus"> Ajouter</span></a></h1>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -36,28 +36,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Item 1</td>
-                            <td>Description 1</td>
-                            <td>Prix 1</td>
-                            <td>Catégorie 1</td>
-                            <td width=240>
-                                <a class="btn btn-default" href="view.php?id=1" role="button"><span class="glyphicon glyphicon-eye-open"></span> Voir</a>
-                                <a class="btn btn-primary" href="update.php?id=1" role="button"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
-                                <a class="btn btn-danger" href="delete.php?id=1" role="button"><span class="glyphicon glyphicon-remove"></span> Supprimer</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Item 2</td>
-                            <td>Description 2</td>
-                            <td>Prix 2</td>
-                            <td>Catégorie 2</td>
-                            <td width=240>
-                                <a class="btn btn-default" href="view.php?id=2" role="button"><span class="glyphicon glyphicon-eye-open"></span> Voir</a>
-                                <a class="btn btn-primary" href="update.php?id=2" role="button"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>
-                                <a class="btn btn-danger" href="delete.php?id=2" role="button"><span class="glyphicon glyphicon-remove"></span> Supprimer</a>
-                            </td>
-                        </tr>
+                        <?php
+                        require 'database.php';
+                        $db = Database::connect();
+                        $statement = $db->query('SELECT items.id, items.name, items.description, items.price, 
+                                                categories.name AS category FROM items LEFT JOIN categories
+                                                 ON items.category = categories.id ORDER BY items.id DESC');
+
+                        while($item = $statement->fetch())
+                        {
+                            echo '<tr>';
+                            echo '<td>' . $item['name'] . '</td>';
+                            echo '<td>' . $item['description'] . '</td>';
+                            echo '<td>' . $item['price'] . '</td>';
+                            echo '<td>' . $item['category'] . '</td>';
+                            echo '<td width=240>';
+
+                            echo '<a class="btn btn-default" href="view.php? id=' . $item['id'] . '" role="button"><span class="glyphicon glyphicon-eye-open"></span> Voir</a>';
+                            echo'  '; 
+                            echo '<a class="btn btn-primary" href="update.php? id= ' . $item['id'] . '" role="button"><span class="glyphicon glyphicon-pencil"></span> Modifier</a>';
+                            echo'  ';
+                            echo '<a class="btn btn-danger" href="delete.php? id= ' . $item['id'] . '" role="button"><span class="glyphicon glyphicon-remove"></span> Supprimer</a>';
+                            
+                            echo '</td>';
+                            echo '</tr>';
+                            
+                        }
+
+                        ?>
+
                     </tbody>
 
                 </table>

@@ -109,7 +109,9 @@ font-size: 18px;
 /*ADMIN*/
 .admin
 {
-    background:#fff ;
+    background:#fff;
     padding:50px;
     border-radius: 10px;
+    
+  
 }
