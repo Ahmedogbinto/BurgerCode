@@ -24,7 +24,7 @@
         <h1 class="text-logo"><span class="glyphicon glyphicon-cutlery"></span> Burger Code <span class="glyphicon glyphicon-cutlery"></span></h1>
         <div class="container admin">
             <div class="row">
-                <h1><strong>Liste des items   </strong><a class="btn btn-success" href="insert.php" role="button"><span class="glyphicon glyphicon-plus"> Ajouter</span></a></h1>
+                <h1><strong>Liste des items   </strong><a class="btn btn-success" href="insert.php" role="button"><span class="glyphicon glyphicon-plus"></span>Ajouter</a></h1>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -48,7 +48,7 @@
                             echo '<tr>';
                             echo '<td>' . $item['name'] . '</td>';
                             echo '<td>' . $item['description'] . '</td>';
-                            echo '<td>' . $item['price'] . '</td>';
+                            echo '<td>' . number_format((float)$item['price'],2,'.','',) . '</td>';
                             echo '<td>' . $item['category'] . '</td>';
                             echo '<td width=240>';
 
@@ -62,6 +62,7 @@
                             echo '</tr>';
                             
                         }
+                        Database::connect();
 
                         ?>
 
