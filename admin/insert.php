@@ -3,6 +3,91 @@ require 'database.php';
 
 $nameError = $descriptionError = $priceError = $categoryError = $imageError = $name = $description = $price = $category = $image = "";     // ici c'est le pre mier passage.
 
+if(!empty($_POST))
+{
+    $name                = checkInput($_POST['name']);
+    $description         = checkInput($_POST['description']);
+    $price               = checkInput($_POST['price']);
+    $categorie           = checkInput($_POST['category']);
+    $image               = checkInput($_FILES['image']['name']);
+    $imagePath           = '../images/'. basename($image);
+    $imageExtension      = pathinfo($imagePath, PATHINFO_EXTENSION);
+    $isSucces            = true;
+    $isUploadSuccess     = false;
+
+
+    if(empty($name))
+    {
+        $nameError = 'Ce champ ne peut pas être vide';
+        $isSuccess = false;
+    }
+    if(empty($description))
+    {
+        $descriptionError = 'Ce champ ne peut pas être vide';
+        $isSuccess = false;
+    }
+    if(empty($price))
+    {
+        $priceError = 'Ce champ ne peut pas être vide';
+        $isSuccess = false;
+    }
+    if(empty($category))
+    {
+        $categoryError = 'Ce champ ne peut pas être vide';
+        $isSuccess = false;
+    }
+    if(empty($image))
+    {
+        $imageError = 'Ce champ ne peut pas être vide';
+        $isSuccess = false;
+    }
+    else
+    {
+        $isUploadSuccess = true;
+        if($imageExtension !="jpeg" && $imageExtension !="png" && $imageExtension !="jpeg" && $imageExtension != "gif")
+        {
+            $imageError = "les fichiers autorisés sont: .jpg, .jpeg, .png, .gif";
+            $isUploadSuccess = false;
+        } 
+        if(file_exists($imagePath))
+        {
+            $imageError = "le fichier existe deja";
+            $isUploadSuccess = false;
+        }
+        if($_FILES["image"]["size"] > 500000)
+        {
+            $imageError = "le fichier ne doit pas depasser 500kB"; 
+            $isUploadSuccess = false; 
+        }
+        if(isUploadSuccess)
+        {
+            if(!move_upload_file($_FILES["image"]["tmp_name"], $imagePath))
+            {
+                $imageError = "Il y a eu une erreur lors du televersement";
+                $isUploadSuccess = false;
+                
+            }
+        }
+    }
+    if($isSucces && $isUploadSuccess)
+    {
+        $db = Database::conect();
+        $statement = $db->prepare("INSERT INTO items (name,description,price,category,image) values(?,?,?,?,?)");
+        $statement = $db->execute(array($name,$description,$price,$category,$image));
+        Database::disconnect();
+        header("Location: index.php");
+    }
+
+}
+
+function checkInput($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
 ?>
 
 
@@ -74,14 +159,13 @@ $nameError = $descriptionError = $priceError = $categoryError = $imageError = $n
                         <input type="file" id="image" name="image">
                         <span class="help-inline"><?php echo $imageError; ?></span>
                     </div>
-                </form>
-
-                <div class="form-actions">
-                    <br>
-                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Ajouter</button>
-                    <a class="btn btn-primary" href="index.php" role="button"><span class="glyphicon glyphicon-arrow-left"></span> Retour</a>
-                </div>
                 
+                    <div class="form-actions">
+                        <br>
+                        <a class="btn btn-primary" href="index.php" role="button"><span class="glyphicon glyphicon-arrow-left"></span> Retour</a>
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Ajouter</button>
+                    </div>
+                </form>
             </div>
 
         </div>
