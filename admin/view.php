@@ -63,7 +63,7 @@ Database::connect();
                         </div>
                         <br>
                         <div class="form-group">
-                            <label>Prix:</label><?php echo ' ' . number_format((float)$item['price'],2,'.','',) ?>
+                            <label>Prix:</label><?php echo ' ' . number_format((float)$item['price'],2,'.','',) . ' $';?>
                         </div>
                         <br>
                         <div class="form-group">
@@ -81,11 +81,10 @@ Database::connect();
                     </div>
                 </div>
 
-                
                 <div class="col-md-6 site">
                     <div class="img-thumbnail">
                         <img src="<?php  echo '../images/' . $item['image'] ; ?>" class="img-fluid" alt="...">
-                            <div class="price"><?php echo number_format((float)$item['price'],2,'.','',) ; ?></div>
+                            <div class="price"><?php echo number_format((float)$item['price'],2,'.','',) . ' $'; ?></div>
                                 <div class="caption">
                                  <h4><?php echo $item['name'] ;?></h4>
                                     <p><?php echo $item['description'] ; ?></p>
