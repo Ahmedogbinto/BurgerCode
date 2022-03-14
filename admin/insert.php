@@ -59,7 +59,7 @@ if(!empty($_POST))
             $imageError = "le fichier ne doit pas depasser 500kB"; 
             $isUploadSuccess = false; 
         }
-        if(isUploadSuccess)
+        if($isUploadSuccess)
         {
             if(!move_upload_file($_FILES["image"]["tmp_name"], $imagePath))
             {

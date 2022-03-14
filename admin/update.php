@@ -1,19 +1,19 @@
 <?php
-require 'database.php';
+require 'database.php';    // 1- es ce que le GET il est vide: non, je le mets dans la variable (id) et le check avec checkInput
 
 if(!empty($_GET['id']))
 {
     $id = checkInput(($_GET['id']));
 }
 
-$nameError = $descriptionError = $priceError = $categoryError = $imageError = $name = $description = $price = $category = $image = "";     // ici c'est le pre mier passage.
+$nameError = $descriptionError = $priceError = $categoryError = $imageError = $name = $description = $price = $category = $image = "";     // ici c'est le pre mier passage, toutes variables sont vides ou on une valeur par defaut
 
-if(!empty($_POST))
-{
+if(!empty($_POST))         // 2-  la variable globale $_POST pour le moment elle est vide donc je n<entre pas encore dans le if qui suit. // 3-  Si je clique sur le bouton modifier alors la variable globale $_POST n<est plus vide
+{  
     $name                = checkInput($_POST['name']);
     $description         = checkInput($_POST['description']);
     $price               = checkInput($_POST['price']);
-    $categorie           = checkInput($_POST['category']);
+    $category            = checkInput($_POST['category']);
     $image               = checkInput($_FILES['image']['name']);
     $imagePath           = '../images/'. basename($image);
     $imageExtension      = pathinfo($imagePath, PATHINFO_EXTENSION);
@@ -43,10 +43,11 @@ if(!empty($_POST))
     }
     if(empty($image))
     {
-        $isImageUpdated = falser;
+        $isImageUpdated = false;
     }
     else
     {
+        $isImageUpdated = true;
         $isUploadSuccess = true;
         if($imageExtension !="jpeg" && $imageExtension !="png" && $imageExtension !="jpeg" && $imageExtension != "gif")
         {
@@ -63,7 +64,7 @@ if(!empty($_POST))
             $imageError = "le fichier ne doit pas depasser 500kB"; 
             $isUploadSuccess = false; 
         }
-        if(isUploadSuccess)
+        if($isUploadSuccess)
         {
             if(!move_upload_file($_FILES["image"]["tmp_name"], $imagePath))
             {
@@ -73,15 +74,44 @@ if(!empty($_POST))
             }
         }
     }
-    if($isSucces && $isUploadSuccess)
+    if(($isSucces && $isImageUpdated && $isUploadSucces) || ($isSuccess && !$isImageUpdated))
     {
         $db = Database::conect();
-        $statement = $db->prepare("INSERT INTO items (name,description,price,category,image) values(?,?,?,?,?)");
-        $statement = $db->execute(array($name,$description,$price,$category,$image));
+        if($isImageUpdated)
+        {
+            $statement = $db->prepare("UPDATE items set name = ?, description = ?, price = ?, category = ?, image = ? WHERE id = ?");
+            $statement = $db->execute(array($name,$description,$price,$category,$image,$id));
+        }
+        else
+        {
+            $statement = $db->prepare("UPDATE items set name = ?, description = ?, price = ?, category = ?  WHERE id = ?");
+            $statement = $db->execute(array($name,$description,$price,$category,$id));
+        }
         Database::disconnect();
         header("Location: index.php");
     }
-
+    else if($isImageUpdated && !$isUploadSuccess)
+    {
+        $db = Database::connect();
+        $statement = $db->prepare("SELECT image FROM items WHERE id = ?");
+        $statement->execute(array($id));
+        $item = $statement->fetch();
+        $image = $item['image'];
+        Database::disconnect();    
+    }
+}
+else
+{
+    $db = Database::connect();
+    $statement = $db->prepare("SELECT * FROM items WHERE id = ?");
+    $statement->execute(array($id));
+    $item = $statement->fetch();
+    $name                = $item['name'];
+    $description         = $item['description'];
+    $price               = $item['price'];
+    $category            = $item['category'];
+    $image               = $item['image'];
+    Database::disconnect();
 }
 
 function checkInput($data)
@@ -133,7 +163,7 @@ function checkInput($data)
                         <br>
                         <div class="form-group">
                             <label for="name">Description:</label>
-                            <input type="text" class="form-control" id="description" name="description" placeholder="DEscription" value="<?php echo $description; ?>">
+                            <input type="text" class="form-control" id="description" name="description" placeholder="Description" value="<?php echo $description; ?>">
                             <span class="help-inline"><?php echo $descriptionError; ?></span>
                         </div>
                         <br>
@@ -144,7 +174,7 @@ function checkInput($data)
                         </div>
                         <br>
                         <div class="form-group">
-                        <label for="category">Categorie:</label>
+                        <label class="form-label" for="category">Categorie:</label>
                             <select class="form-control" id="category" name="category">
                                 <?php
                                     $db = Database::connect();
@@ -161,10 +191,10 @@ function checkInput($data)
                             <span class="help-inline"><?php echo $categoryError; ?></span>
                         </div>
                         <br>
-                        <div class="form-group">
-                            <label>Image</label>
+                        <div>
+                            <label class="form-label" for="image">Image:</label>
                             <p><?php echo $image; ?></p>
-                            <label for="image">Sélectionner une image:</label> <br>
+                            <label for="image">Sélectionner une nouvelle image:</label> <br>
                             <input type="file" id="image" name="image">
                             <span class="help-inline"><?php echo $imageError; ?></span>
                         </div>
@@ -176,6 +206,18 @@ function checkInput($data)
                         </div>
                     </form>
                 </div>
+
+                <div class="col-md-6 site">
+                    <div class="img-thumbnail">
+                            <img src="<?php echo '../images/' . $image ; ?>"  alt="...">
+                                <div class="price"><?php echo number_format((float)$price,2,'.','',) . ' $'; ?></div>
+                                    <div class="caption">
+                                    <h4><?php echo $name;?></h4>
+                                        <p><?php echo $description;?></p>
+                                        <a href ="#" class="btn btn-order" role="button"><span class="glyphicon glyphicon-shopping-cart"></span></span> Commander</a>
+                                    </div>
+                        </div>
+                    </div>
             </div>
 
         </div>
