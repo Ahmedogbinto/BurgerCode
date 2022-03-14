@@ -3,7 +3,7 @@ require 'database.php';    // 1- es ce que le GET il est vide: non, je le mets d
 
 if(!empty($_GET['id']))
 {
-    $id = checkInput(($_GET['id']));
+    $id = checkInput($_GET['id']);
 }
 
 $nameError = $descriptionError = $priceError = $categoryError = $imageError = $name = $description = $price = $category = $image = "";     // ici c'est le pre mier passage, toutes variables sont vides ou on une valeur par defaut
@@ -14,10 +14,10 @@ if(!empty($_POST))         // 2-  la variable globale $_POST pour le moment elle
     $description         = checkInput($_POST['description']);
     $price               = checkInput($_POST['price']);
     $category            = checkInput($_POST['category']);
-    $image               = checkInput($_FILES['image']['name']);
+    $image               = checkInput($_FILES["image"]["name"]);
     $imagePath           = '../images/'. basename($image);
     $imageExtension      = pathinfo($imagePath, PATHINFO_EXTENSION);
-    $isSucces            = true;
+    $isSuccess            = true;
 
 
 
@@ -49,7 +49,7 @@ if(!empty($_POST))         // 2-  la variable globale $_POST pour le moment elle
     {
         $isImageUpdated = true;
         $isUploadSuccess = true;
-        if($imageExtension !="jpeg" && $imageExtension !="png" && $imageExtension !="jpeg" && $imageExtension != "gif")
+        if($imageExtension !="jpg" && $imageExtension !="png" && $imageExtension !="jpeg" && $imageExtension != "gif")
         {
             $imageError = "les fichiers autorisés sont: .jpg, .jpeg, .png, .gif";
             $isUploadSuccess = false;
@@ -66,7 +66,7 @@ if(!empty($_POST))         // 2-  la variable globale $_POST pour le moment elle
         }
         if($isUploadSuccess)
         {
-            if(!move_upload_file($_FILES["image"]["tmp_name"], $imagePath))
+            if(!move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath))
             {
                 $imageError = "Il y a eu une erreur lors du televersement";
                 $isUploadSuccess = false;
@@ -74,18 +74,18 @@ if(!empty($_POST))         // 2-  la variable globale $_POST pour le moment elle
             }
         }
     }
-    if(($isSucces && $isImageUpdated && $isUploadSucces) || ($isSuccess && !$isImageUpdated))
+    if(($isSuccess && $isImageUpdated && $isUploadSuccess) || ($isSuccess && !$isImageUpdated))
     {
-        $db = Database::conect();
+        $db = Database::connect();
         if($isImageUpdated)
         {
             $statement = $db->prepare("UPDATE items set name = ?, description = ?, price = ?, category = ?, image = ? WHERE id = ?");
-            $statement = $db->execute(array($name,$description,$price,$category,$image,$id));
+            $statement->execute(array($name,$description,$price,$category,$image,$id));
         }
         else
         {
             $statement = $db->prepare("UPDATE items set name = ?, description = ?, price = ?, category = ?  WHERE id = ?");
-            $statement = $db->execute(array($name,$description,$price,$category,$id));
+            $statement->execute(array($name,$description,$price,$category,$id));
         }
         Database::disconnect();
         header("Location: index.php");
@@ -209,7 +209,7 @@ function checkInput($data)
 
                 <div class="col-md-6 site">
                     <div class="img-thumbnail">
-                            <img src="<?php echo '../images/' . $image ; ?>"  alt="...">
+                            <img src="<?php echo '../images/' .$image ; ?>" class="img-fluid" alt="...">
                                 <div class="price"><?php echo number_format((float)$price,2,'.','',) . ' $'; ?></div>
                                     <div class="caption">
                                     <h4><?php echo $name;?></h4>
