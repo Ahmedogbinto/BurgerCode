@@ -45,7 +45,7 @@ if(!empty($_POST))         // 2-  la variable globale $_POST pour le moment elle
     {
         $isImageUpdated = false;
     }
-    else
+    else 
     {
         $isImageUpdated = true;
         $isUploadSuccess = true;

@@ -24,17 +24,36 @@
         <div class="container site">
             
             <h1 class="text-logo"><span class="glyphicon glyphicon-cutlery"></span> Burger Code <span class="glyphicon glyphicon-cutlery"></span></h1>
+                <?php 
+                    require 'admin/database.php';
+                    echo '<nav>
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">';
 
-            <nav>
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation"> <button class="nav-link active" id="pills-tab1-tab" data-bs-toggle="pill" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">Menus</button></li>
-                    <li class="nav-item" role="presentation"> <button class="nav-link" id="pills-tab2-tab" data-bs-toggle="pill" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">Burgers</button></li>
-                    <li class="nav-item" role="presentation"> <button class="nav-link" id="pills-tab3-tab" data-bs-toggle="pill" data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3" aria-selected="false">Snacks</button></li>
-                    <li class="nav-item" role="presentation"> <button class="nav-link" id="pills-tab4-tab" data-bs-toggle="pill" data-bs-target="#tab4" type="button" role="tab" aria-controls="tab4" aria-selected="false">Salades</button></li>
-                    <li class="nav-item" role="presentation"> <button class="nav-link" id="pills-tab5-tab" data-bs-toggle="pill" data-bs-target="#tab5" type="button" role="tab" aria-controls="tab5" aria-selected="false">Boissons</button></li>
-                    <li class="nav-item" role="presentation"> <button class="nav-link" id="pills-tab6-tab" data-bs-toggle="pill" data-bs-target="#tab6" type="button" role="tab" aria-controls="tab6" aria-selected="false">Desserts</button></li>
-                </ul>
-            </nav>
+                    $db =  Database::connect();
+                    $statement = $db->query('SELECT * FROM categories');
+                    $categories = $statement->fetchALL();
+                    foreach($categories as $category)
+                    {
+                        if($category['id'] == '1')
+                        {
+                            echo '<li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="pill" 
+                            data-bs-target="#tab'.$category['id']. '" type="button" role="tab" aria-controls="pills-tab" aria-selected="true">'.$category['name'].'</button></li>';
+                        }   
+                        else 
+                        { 
+                            echo '<li class="nav-item" role="presentation"><button class="nav-link"  data-bs-toggle="pill"  
+                            data-bs-target="#tab'.$category['id'].'" type="button"  role="tab" aria-controls="pills-tab" aria-selected="false" >' .$category['name']. '</button></li>'; 
+                        }
+                    }
+                        echo '</ul>
+                                </nav>';
+                ?>  
+            
+            
+                
+                    
+                
+            
 
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane show active" id="tab1" role="tabpanel" aria-labelledby="pills-home-tab">
