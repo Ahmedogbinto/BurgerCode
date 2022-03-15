@@ -8,11 +8,11 @@ if(!empty($_POST))
     $name                = checkInput($_POST['name']);
     $description         = checkInput($_POST['description']);
     $price               = checkInput($_POST['price']);
-    $categorie           = checkInput($_POST['category']);
+    $category           = checkInput($_POST['category']);
     $image               = checkInput($_FILES['image']['name']);
     $imagePath           = '../images/'. basename($image);
     $imageExtension      = pathinfo($imagePath, PATHINFO_EXTENSION);
-    $isSucces            = true;
+    $isSuccess            = true;
     $isUploadSuccess     = false;
 
 
@@ -44,7 +44,7 @@ if(!empty($_POST))
     else
     {
         $isUploadSuccess = true;
-        if($imageExtension !="jpeg" && $imageExtension !="png" && $imageExtension !="jpeg" && $imageExtension != "gif")
+        if($imageExtension !="jpg" && $imageExtension !="png" && $imageExtension !="jpeg" && $imageExtension != "gif")
         {
             $imageError = "les fichiers autorisés sont: .jpg, .jpeg, .png, .gif";
             $isUploadSuccess = false;
@@ -69,11 +69,11 @@ if(!empty($_POST))
             }
         }
     }
-    if($isSucces && $isUploadSuccess)
+    if($isSuccess && $isUploadSuccess)
     {
-        $db = Database::conect();
+        $db = Database::connect();
         $statement = $db->prepare("INSERT INTO items (name,description,price,category,image) values(?,?,?,?,?)");
-        $statement = $db->execute(array($name,$description,$price,$category,$image));
+        $statement->execute(array($name,$description,$price,$category,$image));
         Database::disconnect();
         header("Location: index.php");
     }
@@ -139,23 +139,23 @@ function checkInput($data)
                     </div>
                     <br>
                     <div class="form-group">
-                    <label for="category">Categorie:</label>
-                        <select class="form-control" id="category" name="category">
-                            <?php
-                                $db = Database::connect();
-                                foreach($db->query('SELECT * FROM categories') as $row)
-                                {
-                                    echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
-                                }
-                                database::disconnect();
-                            ?>
+                        <label class="form-label" for="category">Categorie:</label>
+                            <select class="form-control" id="category" name="category">
+                                <?php
+                                    $db = Database::connect();
+                                    foreach($db->query('SELECT * FROM categories') as $row)
+                                    {
+                                        echo '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+                                    }
+                                    database::disconnect();
+                                ?>
 
-                        </select>
-                        <span class="help-inline"><?php echo $categoryError; ?></span>
+                            </select>
+                            <span class="help-inline"><?php echo $categoryError; ?></span>
                     </div>
                     <br>
                     <div class="form-group">
-                        <label for="image">Sélectionner une image:</label> <br>
+                        <label class="form-label" for="image">Sélectionner une image:</label> <br>
                         <input type="file" id="image" name="image">
                         <span class="help-inline"><?php echo $imageError; ?></span>
                     </div>
