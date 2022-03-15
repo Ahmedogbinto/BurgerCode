@@ -61,7 +61,7 @@ if(!empty($_POST))
         }
         if($isUploadSuccess)
         {
-            if(!move_upload_file($_FILES["image"]["tmp_name"], $imagePath))
+            if(!move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath))
             {
                 $imageError = "Il y a eu une erreur lors du televersement";
                 $isUploadSuccess = false;
